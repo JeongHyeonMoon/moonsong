@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.nts.moonsong.category.repository.CategoryRepository">
+	<select id="selectCategories" resultType="com.nts.moonsong.category.model.Category">
+		SELECT
+			category_id AS categoryId
+			, category_name AS categoryName
+		FROM
+			_category
+	</select>
+</mapper>

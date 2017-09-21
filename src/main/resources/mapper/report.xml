@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.nts.moonsong.report.repository.ReportRepository">
+	<insert id="insertReviewReport" parameterType = "com.nts.moonsong.report.model.ReviewReport">
+	 	INSERT INTO _report_review(
+	 		review_id
+	 		, reporter_id
+	 	)
+	 	VALUES(
+	 		#{reviewId}
+	 		, #{reporterId}
+	 	)ON DUPLICATE KEY UPDATE 
+			reporter_id = #{reporterId}
+	</insert>
+	  
+	<insert id="insertPageReport" parameterType = "com.nts.moonsong.report.model.PageReport">
+	 	INSERT INTO _report_page(
+	 		page_id
+	 		, reporter_id
+	 	)
+	 	VALUES(
+	 		#{pageId}
+	 		, #{reporterId}
+	 	)ON DUPLICATE KEY UPDATE 
+			reporter_id = #{reporterId}
+	</insert>
+	
+	<insert id="insertReviewCommentReport" parameterType = "com.nts.moonsong.report.model.ReviewCommentReport">
+	 	INSERT INTO _report_review_comment(
+	 		review_comment_id
+	 		, reporter_id
+	 	)
+	 	VALUES(
+	 		#{reviewCommentId}
+	 		, #{reporterId}
+	 	)ON DUPLICATE KEY UPDATE 
+			reporter_id = #{reporterId}
+	</insert>
+  
+	<insert id="insertPageCommentReport" parameterType = "com.nts.moonsong.report.model.PageCommentReport">
+	 	INSERT INTO _report_page_comment(
+	 		page_comment_id
+	 		, reporter_id
+	 	)
+	 	VALUES(
+	 		#{pageCommentId}
+	 		, #{reporterId}
+	 	)ON DUPLICATE KEY UPDATE 
+			reporter_id = #{reporterId}
+	</insert>  
+  
+  
+  	<select id = "selectReviewReports" resultType = "com.nts.moonsong.report.model.ReviewReport">
+  		SELECT
+  			r.review_id AS reviewId
+  			, r.review_title AS reviewTitle
+  			, (SELECT 
+  					nickname 
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = r.writer_id) AS writer
+  			,m.nickname as reporter
+  			,r.reg_date as regDate
+  		FROM
+  			_report_review rr 
+  		INNER JOIN 
+  			_review r 
+  		ON 
+  			rr.review_id = r.review_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rr.reporter_id = m.member_id
+  	</select> 
+  	
+  	<select id = "selectPageReports" resultType = "com.nts.moonsong.report.model.PageReport">
+  		SELECT
+  			p.page_id AS pageId
+  			, p.page_title AS pageTitle
+  			, (SELECT 
+  					nickname 
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = p.writer_id) AS writer
+  			, m.nickname AS reporter
+  			, rp.reg_date AS regDate
+  		FROM
+  			_report_page rp 
+  		INNER JOIN 
+  			_page p 
+  		ON 
+  			rp.page_id = p.page_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rp.reporter_id = m.member_id
+  	</select> 
+  	
+  	<select id = "selectReviewCommentReports" resultType = "com.nts.moonsong.report.model.ReviewCommentReport">
+  		SELECT
+  			c.comment_id AS commentId
+  			, c.content AS content
+  			, (SELECT 
+  					nickname
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = c.writer_id) AS writer
+  			, m.nickname AS reporter
+  			, rc.reg_date AS regDate
+  		FROM
+  			_report_review_comment rc 
+  		INNER JOIN 
+  			_review_comment c 
+  		ON 
+  			rc.review_comment_id = c.comment_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rc.reporter_id = m.member_id
+  	</select>
+  	
+  	<select id = "selectPageCommentReports" resultType = "com.nts.moonsong.report.model.PageCommentReport">
+		SELECT
+  			c.comment_id AS commentId
+  			, c.content AS content
+  			, (SELECT 
+  					nickname
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = c.writer_id) AS writer
+  			, m.nickname AS reporter
+  			, rc.reg_date AS regDate
+  		FROM
+  			_report_page_comment rc 
+  		INNER JOIN 
+  			_page_comment c 
+  		ON 
+  			rc.page_comment_id = c.comment_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rc.reporter_id = m.member_id
+  	</select>
+  	
+	<select id="selectReviewReportsByMemberId" parameterType="java.lang.Long" resultType = "com.nts.moonsong.report.model.ReviewReport">
+		SELECT
+  			r.review_id AS reviewId
+  			, r.review_title AS reviewTitle
+  			, (SELECT 
+  					nickname 
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = r.writer_id) AS writer
+  			, m.nickname AS reporter
+  			, r.reg_date AS regDate
+  		FROM
+  			_report_review rr 
+  		INNER JOIN 
+  			_review r 
+  		ON 
+  			rr.review_id = r.review_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rr.reporter_id = m.member_id
+		WHERE
+			m.member_id = #{memberId}
+	</select>
+	
+	<select id="selectPageReportsByMemberId" parameterType="java.lang.Long" resultType = "com.nts.moonsong.report.model.PageReport">
+		SELECT
+  			p.page_id AS pageId
+  			, p.page_title AS pageTitle
+  			, (SELECT 
+  					nickname 
+  				FROM 
+  					_member mm 
+  				WHERE 
+  					mm.member_id = p.writer_id) AS writer
+  			, m.nickname AS reporter
+  			, rp.reg_date AS regDate
+  		FROM
+  			_report_page rp 
+  		INNER JOIN 
+  			_page p 
+  		ON 
+  			rp.page_id = p.page_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rp.reporter_id = m.member_id
+		WHERE
+			m.member_id = #{memberId}
+	</select>     
+	<select id="selectReviewCommentReportsByMemberId" parameterType="java.lang.Long" resultType = "com.nts.moonsong.report.model.ReviewCommentReport">
+		SELECT
+ 			c.comment_id AS commentId
+ 			, c.content AS content
+ 			, (SELECT 
+ 					nickname
+ 				FROM 
+ 					_member mm 
+ 				WHERE 
+ 					mm.member_id = c.writer_id) AS writer
+ 			, m.nickname AS reporter
+ 			, rc.reg_date AS regDate
+ 		FROM
+ 			_report_review_comment rc 
+ 		INNER JOIN 
+ 			_review_comment c 
+ 		ON 
+ 			rc.review_comment_id = c.comment_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rc.reporter_id = m.member_id
+		WHERE
+			m.member_id = #{memberId}
+	</select>
+
+
+	
+	<select id="selectPageCommentReportsByMemberId" parameterType="java.lang.Long" resultType = "com.nts.moonsong.report.model.PageCommentReport">
+		SELECT
+ 			c.comment_id as commentId
+ 			,c.content as content
+ 			,(select 
+ 					nickname
+ 				from 
+ 					_member mm 
+ 				where 
+ 					mm.member_id = c.writer_id) as writer
+ 			,m.nickname as reporter
+ 			,rc.reg_date as regDate
+ 		FROM
+ 			_report_page_comment rc 
+ 		INNER JOIN 
+ 			_page_comment c 
+ 		ON 
+ 			rc.page_comment_id = c.comment_id
+		INNER JOIN 
+			_member m ON rc.reporter_id = m.member_id
+		WHERE
+			m.member_id = #{memberId}
+	</select>
+	
+	<delete id="deleteReview" parameterType="java.lang.Long">
+     	DELETE FROM
+     		_review
+     	WHERE 
+     		review_id = #{reviewId}
+     </delete>
+     
+     <delete id = "deleteReviewReport" parameterType="java.lang.Long">
+     	DELETE FROM
+     	 	_report_review
+     	WHERE 
+     		review_id = #{reviewId}
+     </delete>
+     
+     <delete id="deletePage" parameterType="java.lang.Long">
+     	DELETE FROM
+     		_page
+     	WHERE 
+     		page_id = #{pageId}
+     </delete>
+     
+     <delete id = "deletePageReport" parameterType="java.lang.Long">
+     	DELETE FROM
+     	 	_report_page
+     	WHERE 
+     		page_id = #{pageId}
+     </delete>
+     
+	<delete id="deleteReviewComment" parameterType="java.lang.Long">
+     	DELETE FROM
+     		_review_comment
+     	WHERE 
+     		comment_id = #{commentId}
+     </delete>
+     
+     <delete id = "deleteReviewCommentReport" parameterType="java.lang.Long">
+     	DELETE FROM
+     	 	_report_review_comment
+     	WHERE 
+     		review_comment_id = #{commentId}
+     </delete> 
+     
+     <delete id="deletePageComment" parameterType="java.lang.Long">
+     	DELETE FROM
+     		_page_comment
+     	WHERE 
+     		comment_id = #{commentId}
+     </delete>
+     
+     <delete id = "deletePageCommentReport" parameterType="java.lang.Long">
+     	DELETE FROM
+     	 	_report_page_comment
+     	WHERE 
+     		page_comment_id = #{commentId}
+     </delete>
+
+  </mapper>

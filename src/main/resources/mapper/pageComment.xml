@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.moonsong.comment.repository.PageCommentRepository">
+	<insert id = "insertPageCommnent" parameterType = "com.nts.moonsong.comment.model.PageComment">
+		INSERT INTO _page_comment(
+			writer_id
+			, page_id
+			, content
+		)
+		VALUES(
+			#{writerId}
+			, #{pageId}
+			, #{content}
+		)
+	</insert>
+	<select id="selectPageComments" parameterType = "java.lang.Long" resultType = "com.nts.moonsong.comment.model.PageComment">
+		SELECT
+			a.comment_id AS commentId
+			, a.writer_id AS writerId
+			, a.content
+			, a.reg_date AS regDate
+			, a.page_id AS pageId
+			, b.nickname AS writerNickName
+		FROM
+			_page_comment a
+		INNER JOIN
+			_member b
+		ON 
+			a.writer_id = b.member_id
+		WHERE
+			a.page_id = #{pageId}
+	</select>
+	<update id="updatePageCommnent" parameterType = "com.nts.moonsong.comment.model.PageComment">
+		UPDATE
+			_page_comment
+		SET
+			content = #{content}
+		WHERE
+			comment_id = #{commentId}
+	</update>
+	<delete id = "deletePageComment" parameterType = "com.nts.moonsong.comment.model.PageComment">
+		DELETE FROM
+			_page_comment
+		WHERE
+			comment_id = #{commentId}
+	</delete>
+</mapper>

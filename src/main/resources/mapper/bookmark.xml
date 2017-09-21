@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.moonsong.bookmark.repository.BookMarkRepository">
+	<insert id = "insertBookMark" parameterType = "com.nts.moonsong.bookmark.model.BookMark">
+		INSERT INTO _bookmark(
+			member_id
+			, page_id
+		)
+		VALUES(
+			#{memberId}
+			, #{pageId}
+		)ON DUPLICATE KEY UPDATE 
+			page_id = #{pageId}
+
+	</insert>
+	<select id="isBookMarked" parameterType = "com.nts.moonsong.bookmark.model.BookMark" resultType="java.lang.Boolean">
+		SELECT 
+			EXISTS (
+				SELECT 
+					1
+				FROM 
+					_bookmark
+				WHERE 
+					page_id = #{pageId}
+				AND
+					member_id = #{memberId}
+			)
+	</select>
+	<delete id="deleteBookMark" parameterType = "com.nts.moonsong.bookmark.model.BookMark">
+		DELETE FROM
+			_bookmark
+		WHERE
+			page_id = #{pageId}
+		AND
+			member_id = #{memberId}
+	</delete>
+	<select id ="selectBookmarksByMemberId" resultType="com.nts.moonsong.page.dto.PageView">
+		SELECT
+			p.page_id AS pageId
+            , content
+            , writer_id AS writerId
+            , reg_date AS regDate
+            , authorized AS isAuthorized
+            , category_id AS categoryId
+            , (SELECT 
+            		category_name 
+            	FROM 
+            		_category c 
+            	WHERE 
+            		c.category_id = p.category_id ) AS categoryName
+            , page_title AS pageTitle
+		FROM
+			_page p 
+		INNER JOIN
+			_bookmark m
+		ON
+			p.page_Id = m.page_Id
+		WHERE
+			m.member_id = #{loginId};
+	</select>
+</mapper>

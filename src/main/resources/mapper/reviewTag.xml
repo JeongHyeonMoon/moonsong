@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.moonsong.tag.repository.ReviewTagRepository">
+	<insert id="insertReviewTag" parameterType="com.nts.moonsong.tag.model.ReviewTag">
+		INSERT
+		INTO
+			_review_tag(
+				review_id
+				, tag_id)
+		VALUES(
+			#{reviewId}
+			, #{tagId}
+		)
+	</insert>
+	
+	<select id="selectReviewTagViewsByReviewId" parameterType="java.lang.Long" resultType="com.nts.moonsong.tag.dto.ReviewTagView">
+		SELECT
+			a.review_id AS reviewId
+			, a.tag_id AS tagId
+			, b.tag_name AS tagName
+		FROM
+			_review_tag a
+		INNER JOIN
+			_tag b
+		ON 
+			a.tag_id = b.tag_id
+		WHERE
+			a.review_id = #{reviewId}
+	</select>
+	
+	<select id="isExistReviewTag" parameterType="com.nts.moonsong.tag.model.ReviewTag" resultType="java.lang.Boolean">
+		SELECT EXISTS 
+			(SELECT 1
+			FROM 
+				_review_tag
+			WHERE 
+				review_id = #{reviewId}
+			AND 
+				tag_id = #{tagId}
+			)
+	</select>
+	
+	<delete id="deleteReviewTag" parameterType="com.nts.moonsong.tag.model.ReviewTag">
+		DELETE
+		FROM
+			_review_tag
+		WHERE
+			review_id = #{reviewId}
+		AND
+			tag_id = #{tagId}
+	</delete>
+</mapper>

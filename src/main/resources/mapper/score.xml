@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.nts.moonsong.score.repository.ScoreRepository">
+       <insert id="insertScore" parameterType="com.nts.moonsong.score.model.Score">
+       		INSERT INTO _score (
+       			ipv6
+       			, page_id
+       			, score
+       		)
+       		values(
+       			#{ipv6}
+       			, #{pageId}
+       			, #{score}
+       		)
+       		ON DUPLICATE KEY UPDATE 
+       			score = #{score}
+       </insert>
+       <select id="selectScoreByPageId" parameterType="long" resultType="com.nts.moonsong.score.model.Score">
+       		SELECT 
+       			score
+       		FROM
+       			_score
+       		WHERE
+       			page_id = #{pageId}
+       </select>
+       <select id="selectScoresDesc" resultType="com.nts.moonsong.score.dto.PageScoreView">
+       		SELECT
+       			s.ipv6 AS ipv6
+       			, s.page_id AS pageId
+       			, p.page_title AS pageTitle
+       			, s.score AS score
+       		FROM
+       			_score s 
+			INNER JOIN 
+				_page p 
+			ON 
+				s.page_id = p.page_id
+       		ORDER BY 
+       			score DESC
+       		LIMIT 
+       			10
+       </select>
+</mapper>

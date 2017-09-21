@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+     <mapper namespace="com.nts.moonsong.section.repository.SectionRepository">
+     <select id = "selectSections" resultType = "com.nts.moonsong.section.model.Section">
+     	SELECT 
+     		section_id as sectionId
+     		, section_name as sectionName
+     	FROM
+     		_section
+     </select>
+     
+     <select id = "getSectionName" parameterType= "com.nts.moonsong.member.model.Member" resultType = "com.nts.moonsong.section.model.Section">
+     	SELECT
+     		distinct(s.section_name) as sectionName
+     	FROM
+     		_member m
+     		inner join _section s
+     		on m.section_id = s.section_id
+     	WHERE
+     		s.section_id = #{sectionId}
+     </select>
+     </mapper>

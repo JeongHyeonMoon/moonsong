@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.moonsong.tag.repository.ConcernTagRepository">
+	<insert id="insertConcernTag" parameterType="com.nts.moonsong.tag.model.ConcernTag">
+		INSERT 
+		INTO 
+			_concern_tag(
+				member_id
+				, tag_id)
+		VALUES (
+			#{memberId}
+			, #{tagId}
+		)
+	</insert>
+	<select id="selectConcernTagsByMemberId" parameterType="long" resultType="com.nts.moonsong.tag.model.ConcernTag">
+		SELECT	
+			a.tag_id AS tagId
+			, a.tag_name AS tagName
+			, b.member_id AS memberId
+		FROM 
+			_tag a
+		INNER JOIN 
+			_concern_tag b
+		ON 
+			a.tag_id = b.tag_id
+		WHERE 
+			b.member_id = #{memberId}
+	</select>
+	<delete id="deleteConcernTag">
+		DELETE
+		FROM 
+			_tag
+		WHERE	
+			member_id = #{memberId}
+		AND		
+			tag_id = #{tagId}
+	</delete>
+</mapper>

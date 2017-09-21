@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.moonsong.comment.repository.ReviewCommentRepository">
+	<select id="selectCommentsByReviewId" resultType="com.nts.moonsong.comment.model.ReviewComment" parameterType="java.lang.Long">
+		SELECT	a.comment_id AS commentId,
+				a.writer_id AS writerId,
+				a.review_id AS reviewId,
+				a.reg_date AS regDate,
+				a.content AS content,
+				b.nickname AS writerNickName
+		FROM 
+			_review_comment a
+		INNER JOIN 
+			_member b
+		ON 
+			a.writer_id = b.member_id
+		WHERE 
+			review_id = #{review_id}
+	</select>
+	<delete id="deleteCommentsByReviewId">
+		DELETE
+		FROM _review_comment
+		WHERE review_id = #{review_id}
+	</delete>
+	
+	<insert id="insertReviewComment" parameterType="com.nts.moonsong.comment.model.ReviewComment">
+		INSERT INTO _review_comment(
+			writer_id,
+			review_id,
+			content
+		) VALUES(
+			#{writerId},
+			#{reviewId},
+			#{content}
+		)
+	</insert>
+	<delete id = "deleteReviewComment" parameterType="com.nts.moonsong.comment.model.ReviewComment">
+		DELETE FROM
+			_review_comment
+		WHERE
+			comment_id = #{commentId}
+	</delete>
+	
+</mapper>

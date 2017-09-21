@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+   <mapper namespace="com.nts.moonsong.member.repository.MemberRepository">
+   <insert id="insertMember" parameterType="com.nts.moonsong.member.model.Member">
+   		INSERT INTO _member(
+   			section_id
+   			, nickname
+   			, password
+   			, email
+   		)
+   		VALUES(
+   			#{sectionId}
+   			, #{nickname}
+   			, PASSWORD(#{password})
+   			, #{email}
+   		)
+   </insert>
+
+   <select id="isValidMember" resultType="boolean">
+		SELECT EXISTS(
+			(SELECT 
+				1
+			FROM 
+				_member
+			WHERE 
+				nickname = #{nickname}
+			AND 
+				password = password(#{password})
+			AND
+				is_deleted = #{isDeleted}
+			)
+		)
+   </select>
+   <select id = "isExistNickname" parameterType= "String" resultType="java.lang.Boolean">
+   		SELECT EXISTS(
+   			(SELECT 
+				1 
+			FROM 
+				_member 
+			WHERE 
+				nickname = #{nickname})
+   		)
+   </select>
+   <select id = "selectMembers" resultType="com.nts.moonsong.member.model.Member">
+   		SELECT
+   			member_id AS memberId
+   			, section_id AS sectionId
+   			, nickname
+   			, email
+   			, reg_date AS regDate
+   		FROM
+   			_member
+   		WHERE
+   			deleted = 0
+   </select>
+   <select id = "selectMemberByNickname" parameterType= "java.lang.String" resultType="com.nts.moonsong.member.model.Member">
+   		SELECT
+   			member_id AS memberId
+   			, section_id AS sectionId
+   			, nickname
+   			, email
+   			, reg_date AS regDate
+   		FROM
+   			_member
+   		WHERE
+   			nickname = #{nickname}
+   </select>
+   <update id = "deleteMember" parameterType = "com.nts.moonsong.member.model.Member">
+   		UPDATE
+   			_member
+   		SET
+   			is_deleted = 1
+   		WHERE
+   			member_id = #{memberId}
+   </update>
+   <insert id = "insertAdmin" parameterType="Long">
+   		INSERT INTO _admin(
+   			member_id
+   		)
+   		VALUES(
+   			#{memberId}
+   		)
+   </insert>
+   <select id="isExistAdmin" parameterType="Long" resultType="java.lang.Boolean">
+   		SELECT EXISTS(
+   			(SELECT 
+				1 
+			FROM 
+				_admin 
+			WHERE 
+				member_id = #{memberId})
+   		)
+   </select>
+   <select id="isAdminByNickname" resultType="boolean" parameterType="string">
+   		SELECT EXISTS(
+   			(SELECT 
+   				1
+   			FROM 
+   				_admin
+   			WHERE 
+   				member_id = (
+	   				SELECT 
+	   					member_id
+	   				FROM 
+	   					_member
+	   				WHERE 
+	   					nickname = #{nickname}
+   				)
+   			) 
+   		)
+   </select>
+   <select id = "selectMember" parameterType="java.lang.Long" resultType="com.nts.moonsong.member.model.Member">
+   		SELECT
+   			member_id AS memberId
+   			, nickname AS nickname
+   			, section_id AS sectionId
+   			, email AS email
+   			, reg_date AS regDate
+   		FROM
+   			_member
+   		WHERE
+   			member_id = #{memberId}
+   </select>
+   <select id ="selectMemberSections" resultType="com.nts.moonsong.member.dto.MemberView">
+   		SELECT
+   			m.member_id AS memberId
+   			, m.section_id AS sectionId
+   			, m.nickname
+   			, m.email
+   			, m.reg_date AS regDate
+            , s.section_name AS sectionName
+   		FROM
+   			_member m 
+		INNER JOIN 
+			_section s 
+		ON 
+			(m.section_id = s.section_id)
+   		WHERE
+   			is_deleted = 0;
+   </select>
+   <select id = "selectMemberView" parameterType = "java.lang.Long" resultType="com.nts.moonsong.member.dto.MemberView">
+   		SELECT
+   			m.member_id AS memberId
+   			, m.section_id AS sectionId
+   			, m.nickname
+   			, m.email
+   			, m.reg_date AS regDate
+            , s.section_name AS sectionName
+   		FROM
+   			_member m 
+		LEFT OUTER JOIN 
+			_section s 
+		ON 
+			(m.section_id = s.section_id)
+   		WHERE
+   			m.member_id = #{loginId}
+   		AND
+   			is_deleted = 0;
+   </select>
+   <update id="updateMember" parameterType="com.nts.moonsong.member.model.Member">
+   		UPDATE 
+   			_member
+   		SET
+   			section_id = #{sectionId}
+			, email = #{email}
+		WHERE
+			member_id = #{memberId}
+   </update>
+	<update id = "updatePassword" parameterType="com.nts.moonsong.member.model.Member">
+		UPDATE
+			_member
+		SET
+			password = PASSWORD(#{password})
+		WHERE
+			member_id = #{memberId}
+	</update>
+</mapper>

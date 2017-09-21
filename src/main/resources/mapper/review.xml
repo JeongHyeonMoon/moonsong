@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.moonsong.review.repository.ReviewRepository">
+	<insert id="insertReview" useGeneratedKeys="true" keyProperty="target.reviewId" >
+		INSERT INTO _review(
+			review_title
+			, writer_id
+			, content)
+		VALUES (
+			#{target.reviewTitle}
+			, #{target.writerId}
+			, #{target.content})
+	</insert>
+	<select id="selectReviews" resultType="com.nts.moonsong.review.dto.ReviewView">
+		SELECT	
+			a.review_id AS reviewId
+			, a.review_title AS reviewTitle
+			, a.writer_id AS writerId
+			, a.content
+			, a.reg_date AS regDate
+			, b.nickname AS writerNickname
+		FROM 
+			_review a
+		LEFT OUTER JOIN
+			_member b
+		ON
+			a.writer_id = b.member_id
+		ORDER BY 
+			a.reg_date DESC
+		LIMIT 
+			#{startIndex}, #{offset}
+	</select>
+	<select id="selectReviewsByKeyword" resultType="com.nts.moonsong.review.dto.ReviewView">
+		SELECT
+			c.reviewId
+		    , c.reviewTitle
+		    , c.writerId
+		    , c.content
+		    , c.regDate
+		    , c.writerNickname
+		FROM
+			((SELECT
+					a.review_id AS reviewId
+					, a.review_title AS reviewTitle
+					, a.writer_id AS writerId
+					, a.content
+					, a.reg_date AS regDate
+					, b.nickname AS writerNickname
+				FROM 
+					_review a
+				LEFT OUTER JOIN
+					_member b
+				ON
+					a.writer_id = b.member_id
+				WHERE 
+					a.review_title LIKE CONCAT('%', #{keyword} , '%')
+				)
+				UNION
+				(SELECT	
+					a.review_id AS reviewId
+					, a.review_title AS reviewTitle
+					, a.writer_id AS writerId
+					, a.content
+					, a.reg_date AS regDate
+					, b.nickname AS writerNickname
+				FROM 
+					_review a
+				LEFT OUTER JOIN
+					_member b
+				ON
+					a.writer_id = b.member_id
+				WHERE 
+					a.review_id IN (
+						SELECT 
+							b.review_id
+						FROM 
+							_tag a
+						LEFT OUTER JOIN
+							_review_tag b
+						ON 
+							a.tag_id = b.tag_id
+						WHERE 
+							a.tag_name = #{keyword}
+					)
+				)
+				UNION
+				(SELECT
+					a.review_id AS reviewId
+					, a.review_title AS reviewTitle
+					, a.writer_id AS writerId
+					, a.content
+					, a.reg_date AS regDate
+					, b.nickname AS writerNickname
+				FROM
+					_review a
+				LEFT OUTER JOIN
+					_member b
+				ON
+					a.writer_id = b.member_id
+				WHERE
+					b.member_id IN (
+						SELECT
+							member_id
+						FROM
+							_member
+						WHERE
+							nickname = #{keyword}
+					)
+				)
+				) c
+		ORDER BY regDate DESC
+		LIMIT #{startIndex}, #{offset}
+	</select>
+
+	<select id="selectByReviewId" parameterType="long" resultType="com.nts.moonsong.review.dto.ReviewView">
+		SELECT	
+			a.review_id AS reviewId
+			, a.review_title AS reviewTitle
+			, a.writer_id AS writerId
+			, a.content
+			, a.reg_date AS regDate
+			, b.nickname AS writerNickname
+		FROM 
+			_review a
+		LEFT OUTER JOIN
+			_member b
+		ON
+			a.writer_id = b.member_id
+		WHERE 
+			review_id = #{reviewId}
+	</select>
+	<update id="updateReview" parameterType="com.nts.moonsong.review.model.Review">
+		UPDATE 
+			_review
+		SET	
+			review_title = #{target.reviewTitle}
+			, content = #{target.content}
+		WHERE 
+			review_id = #{target.reviewId}
+	</update>
+	<delete id="deleteReviewsByReviewId" parameterType="long">
+		DELETE FROM 
+			_review
+		WHERE 
+			review_id = #{reviewId}
+	</delete>
+	<select id ="selectReviewsByMemberId" resultType="com.nts.moonsong.review.dto.ReviewView">
+		SELECT	
+			a.review_id AS reviewId
+			, a.review_title AS reviewTitle
+			, a.writer_id AS writerId
+			, a.content
+			, a.reg_date AS regDate
+			, b.nickname AS writerNickname
+		FROM 
+			_review a
+		INNER JOIN
+			_member b
+		ON
+			a.writer_id = b.member_id
+		WHERE
+			a.writer_id = #{memberId}
+		ORDER BY 
+			a.reg_date DESC
+		LIMIT 
+			#{startIndex}, #{offset}
+	</select>
+	<delete id="deleteReview" parameterType="java.lang.Long">
+		DELETE FROM
+			_review
+		WHERE
+			review_id = #{reviewId}
+	</delete>
+</mapper>

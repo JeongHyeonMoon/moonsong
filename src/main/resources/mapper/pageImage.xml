@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.moonsong.page.repository.PageImageRepository">
+	<insert id="insertPageImage" parameterType="com.nts.moonsong.page.model.PageImage">
+		INSERT INTO _page_image(
+			page_id
+			, image_file_name
+			, writer_id
+		)
+		VALUES (
+			#{pageId}
+			, #{imageFileName}
+			, #{writerId}
+		)
+	</insert>
+	
+	<select id="selectPageImagesByPageId" resultType="com.nts.moonsong.page.model.PageImage" parameterType="java.lang.Long">
+		SELECT	
+				page_id AS pageId
+				, image_file_name AS imageFileName
+				, writer_id AS writerId
+				, reg_date AS regDate
+		FROM 
+			_page_image
+		WHERE 
+			page_id = #{pageId}
+	</select>
+	<delete id = "deletePageImage" parameterType="com.nts.moonsong.page.model.PageImage">
+		DELETE
+		FROM 
+			_page_image
+		WHERE 
+			page_id = #{pageId}
+		AND 
+			image_file_name = #{imageFileName}		
+	</delete>
+	<delete id ="deletePageImagesByPageId" parameterType="long">
+		DELETE
+		FROM 
+			_page_image
+		WHERE 
+			page_id = #{pageId}
+	</delete>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.nts.moonsong.auth.repository.AuthRepository">
+	<insert id="insertAuthValue" parameterType="com.nts.moonsong.auth.model.Auth">
+		INSERT
+		INTO 
+			_auth(
+				member_id
+				, auth_value
+				, auth_level)
+		VALUES (
+			#{target.memberId}
+			, #{target.randomValue}
+			, #{target.authLevel})
+	</insert>
+	
+	<select id="selectAuth" parameterType="long" resultType="com.nts.moonsong.auth.model.Auth">
+		 SELECT	
+		 	member_id AS memberId,
+	 		auth_value AS randomValue,
+	 		auth_level AS authLevel
+		 FROM 
+		 	_auth
+		 WHERE 
+		 	member_id = #{memberId}
+	</select>
+	<select id="isValidAuth" resultType="boolean" parameterType="com.nts.moonsong.auth.model.Auth">
+		SELECT EXISTS (
+			(SELECT	
+				1
+			FROM		
+				_auth
+			WHERE	
+				member_id = #{memberId}
+			AND		
+				auth_value = #{randomValue}
+			AND
+				auth_level = #{authLevel}
+			)
+		)
+	</select>
+	
+	<select id="isExistAuth" resultType="boolean">
+		SELECT IF(
+			(SELECT 
+				COUNT(*)
+			FROM 
+				_auth
+			WHERE 
+				member_id = #{memberId}) > 0,
+			true,
+			false
+		)
+	</select>
+	
+	<delete id="deleteAuth" parameterType="com.nts.moonsong.auth.model.Auth">
+		DELETE
+		FROM 
+			_auth
+		WHERE 
+			member_id = #{target.memberId}
+		AND 
+			auth_value = #{target.randomValue}
+		AND 
+			auth_level = #{target.authLevel}
+	</delete>
+	<delete id="deleteAuthByMemberId" parameterType="java.lang.Long">
+		DELETE
+		FROM
+			_auth
+		WHERE
+			member_id = #{target.memberId}
+	</delete>
+</mapper>

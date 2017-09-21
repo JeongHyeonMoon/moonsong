@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.nts.moonsong.request.repository.RequestPageRepository">
+	<select id = "selectRequestPages" resultType = "com.nts.moonsong.request.model.RequestPage">
+		SELECT 
+			rp.page_id AS pageId
+			, rp.requester_id AS requesterId
+			, m.nickname AS requester
+			, p.page_title AS pageTitle
+		FROM
+			_request_page rp 
+		INNER JOIN 
+			_page p 
+		ON 
+			rp.page_id = p.page_id
+		INNER JOIN 
+			_member m 
+		ON 
+			rp.requester_id = m.member_id
+     </select>
+     <update id = "authorizePage" parameterType="java.lang.Long">
+     	UPDATE 
+     		_page
+     	SET
+     		authorized = 1
+     	WHERE
+     		page_id = #{pageId}
+     </update>
+     <delete id = "completeAuthorized"  parameterType="com.nts.moonsong.request.model.RequestPage">
+     	DELETE FROM
+     		_request_page
+     	WHERE
+     		page_id = #{pageId}
+     	AND
+     		requester_id = #{requesterId}
+     </delete>
+     <insert id="insertRequestPage" parameterType="com.nts.moonsong.request.model.RequestPage" >
+     	INSERT INTO _request_page(
+     		page_id
+     		,requester_id
+     	)
+     	VALUES(
+     		#{pageId}
+     		,#{requesterId}
+     	)
+     </insert>
+     </mapper>
